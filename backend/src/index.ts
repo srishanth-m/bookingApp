@@ -1,16 +1,19 @@
-import express , {Request , Response} from "express"
-import cors from "cors"
-import dotenv from "dotenv"
+import express, { Request, Response } from "express";
+import cors from "cors";
+import "dotenv/config";
+import mongoose, { mongo } from "mongoose";
 
-const app = express()
-app.use(express.json())
-app.use(express.urlencoded({extended : true}))
-app.use(cors())
+mongoose.connect(process.env.MONGO_URI as string)
 
-app.get("/api/test" , async(req : Request , res : Response) => {
-    res.json({message : "hello from express endpoint"})
-})
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
-app.listen(3000 , () =>{
-    console.log("app listening at port 3000")
-})
+app.get("/api/test", async (req: Request, res: Response) => {
+  res.json({ message: "hello from express endpoint" });
+});
+
+app.listen(3000, () => {
+  console.log("app listening at port 3000");
+});

@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
+import { useMutation } from "react-query";
+import * as apiClient from "../api-client";
 
-type RegisterFormData = {
+export type RegisterFormData = {
   firstname: string;
   lastname: string;
   email: string;
@@ -9,9 +11,25 @@ type RegisterFormData = {
 };
 
 const Register = () => {
+  const {
+    register,
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>();
 
-  const { register, watch , handleSubmit} = useForm<RegisterFormData>();
-  const onSubmit = handleSubmit((data) =>{console.log(data)})
+  const mutation = useMutation(apiClient.register, {
+    onSuccess: () => {
+      console.log("registration successful");
+    },
+    onError: (error: Error) => {
+      console.log(error.message);
+    },
+  });
+
+  const onSubmit = handleSubmit((data) => {
+    mutation.mutate(data);
+  });
 
   return (
     <form action="" className="flex flex-col gap-5" onSubmit={onSubmit}>
@@ -23,6 +41,9 @@ const Register = () => {
             className="border rounded w-full py-1 px-2 font-normal"
             {...register("firstname", { required: "This field is required" })}
           ></input>
+          {errors.firstname && (
+            <span className="text-red-500">{errors.firstname.message}</span>
+          )}
         </label>
         <label className="text-gray-700 text-sm font-bold flex-1">
           LastName
@@ -30,6 +51,9 @@ const Register = () => {
             className="border rounded w-full py-1 px-2 font-normal"
             {...register("lastname", { required: "This field is required" })}
           />
+          {errors.lastname && (
+            <span className="text-red-500">{errors.lastname.message}</span>
+          )}
         </label>
       </div>
       <label className="text-gray-700 text-sm font-bold flex-1">
@@ -39,6 +63,9 @@ const Register = () => {
           className="border rounded w-full py-1 px-2 font-normal"
           {...register("email", { required: "This field is required" })}
         />
+        {errors.email && (
+          <span className="text-red-500">{errors.email.message}</span>
+        )}
       </label>
       <label className="text-gray-700 text-sm font-bold flex-1">
         Password
@@ -52,6 +79,9 @@ const Register = () => {
             },
           })}
         />
+        {errors.password && (
+          <span className="text-red-500">{errors.password.message}</span>
+        )}
       </label>
       <label className="text-gray-700 text-sm font-bold flex-1">
         Confirm Password
@@ -67,9 +97,18 @@ const Register = () => {
             },
           })}
         />
+        {errors.confirmPassword && (
+          <span className="text-red-500">{errors.confirmPassword.message}</span>
+        )}
       </label>
       <span>
-        <button type="submit" className="bg-blue-600 text-white p-2 font-bold hover:bg-blue-500 text-xl"> create Account</button>
+        <button
+          type="submit"
+          className="bg-blue-600 text-white p-2 font-bold hover:bg-blue-500 text-xl"
+        >
+          {" "}
+          create Account
+        </button>
       </span>
     </form>
   );
